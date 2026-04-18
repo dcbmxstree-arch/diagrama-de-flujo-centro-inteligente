@@ -2,126 +2,50 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Diagrama de flujo - Sistema evaluación vocacional</title>
+    <title>Diagrama de flujo corregido</title>
     <script src="https://cdn.jsdelivr.net/npm/mermaid@10.9.5/dist/mermaid.min.js"></script>
     <style>
-        body {
-            background: #f0f2f5;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            margin: 0;
-            padding: 20px;
-        }
-        .container {
-            max-width: 1200px;
-            margin: auto;
-            background: white;
-            border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-            padding: 20px;
-        }
-        h1 {
-            text-align: center;
-            color: #1e3c72;
-            font-size: 1.8rem;
-        }
-        .sub {
-            text-align: center;
-            color: #2a5298;
-            margin-bottom: 30px;
-        }
-        .mermaid {
-            background: #fefefe;
-            border-radius: 16px;
-            padding: 20px;
-            overflow-x: auto;
-            text-align: center;
-        }
-        .legend {
-            margin-top: 30px;
-            background: #eef2ff;
-            padding: 15px;
-            border-radius: 12px;
-            font-size: 0.9rem;
-        }
-        .legend span {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            border-radius: 4px;
-            margin-right: 8px;
-            vertical-align: middle;
-        }
-        .footer {
-            text-align: center;
-            margin-top: 20px;
-            font-size: 0.8rem;
-            color: #555;
-        }
+        body { background: #f0f2f5; font-family: Arial, sans-serif; padding: 20px; }
+        .container { max-width: 1100px; margin: auto; background: white; border-radius: 20px; padding: 20px; box-shadow: 0 5px 20px rgba(0,0,0,0.1); }
+        h1 { text-align: center; color: #1e3c72; }
+        .mermaid { background: #fafafa; border-radius: 12px; padding: 20px; overflow-x: auto; text-align: center; }
     </style>
 </head>
 <body>
 <div class="container">
-    <h1>📘 Sistema de Evaluación y Plan de Estudio Personalizado</h1>
-    <div class="sub">Flujo automatizado con DeepSeek API · Evaluaciones semanales · Informes LaTeX</div>
-
+    <h1>📘 Flujo del sistema de evaluación personalizada</h1>
     <div class="mermaid">
         flowchart TD
-            Start([Inicio: Secretaria ingresa JSON<br>con DAT, carrera, universidad]) --> Config{Existe configuracion<br>de universidad?}
-            Config -->|No| Error[Mostrar error: cargar template]
-            Config -->|Sí| CargaDB[(Cargar temarios<br>de la universidad)]
-            CargaDB --> GenPlan[DeepSeek API: Generar plan<br>de estudio inicial (indice 8 semanas)]
-            GenPlan --> GuardaPlan[Guardar plan_estudio.json<br>y cronograma_semanas.json]
-            GuardaPlan --> Semana1[Semana 1<br>Generar evaluacion inicial]
-            Semana1 --> Estudiante1[Estudiante responde prueba]
-            Estudiante1 --> Eval1[DeepSeek evalua respuestas<br>→ fortalezas/debilidades]
-            Eval1 --> GuardaHist[Guardar en progreso.json]
-            GuardaHist --> InformeSem[Generar informe semanal LaTeX<br>para padres y tutor]
-            InformeSem --> Viernes{¿Es viernes?}
-            Viernes -->|No| Espera[Esperar hasta viernes]
-            Espera --> Viernes
-            Viernes -->|Sí| Secretaria[Secretaria introduce<br>progreso.json actual]
-            Secretaria --> CheckSemana{¿Semana actual >= 8?}
-            CheckSemana -->|No| Siguiente[Semana = semana+1<br>Evaluacion acumulativa]
-            Siguiente --> GenExamen[DeepSeek genera nuevo examen<br>preguntas mezcladas]
-            GenExamen --> EstudianteN[Estudiante responde]
-            EstudianteN --> EvalN[Evaluar resultados + comparar]
-            EvalN --> ActualizaJson[Actualizar progreso.json]
-            ActualizaJson --> InformeSem
-            CheckSemana -->|Sí| FinSemana8[Completadas 8 semanas]
-            FinSemana8 --> InformeFinal[DeepSeek genera informe<br>antes/despues por estudiante]
-            InformeFinal --> LatexFinal[Compilar informes LaTeX → PDF]
-            LatexFinal --> Fin([Fin del proceso])
-            Error --> Fin
+            A([Inicio: Secretaria ingresa JSON]) --> B{¿Universidad existe?}
+            B -- No --> C[Error: cargar configuración]
+            B -- Sí --> D[(Cargar temarios)]
+            D --> E[DeepSeek: generar plan 8 semanas]
+            E --> F[Guardar plan_estudio.json]
+            F --> G[Semana 1: generar examen inicial]
+            G --> H[Estudiante responde]
+            H --> I[DeepSeek: evalúa y detecta fortalezas/debilidades]
+            I --> J[Guardar progreso.json]
+            J --> K[Generar informe LaTeX semanal]
+            K --> L{¿Es viernes?}
+            L -- No --> M[Esperar]
+            M --> L
+            L -- Sí --> N[Secretaria carga progreso.json]
+            N --> O{¿Semana >= 8?}
+            O -- No --> P[Semana +1<br>Evaluación acumulativa]
+            P --> Q[DeepSeek genera examen mezclado]
+            Q --> R[Estudiante responde]
+            R --> S[Evaluar y comparar con semanas anteriores]
+            S --> T[Actualizar progreso.json]
+            T --> K
+            O -- Sí --> U[Generar informe final antes/después]
+            U --> V[Compilar LaTeX a PDF]
+            V --> W([Fin])
+            C --> W
     </div>
-
-    <div class="legend">
-        <strong>🎨 Leyenda de colores</strong><br/>
-        <span style="background:#e1f5fe;"></span> Inicio / Fin &nbsp;&nbsp;
-        <span style="background:#fff9c4;"></span> Decisión &nbsp;&nbsp;
-        <span style="background:#c8e6c9;"></span> Proceso / Acción &nbsp;&nbsp;
-        <span style="background:#b3e5fc;"></span> Base de datos / JSON &nbsp;&nbsp;
-        <span style="background:#ffccbc;"></span> Interacción con DeepSeek API &nbsp;&nbsp;
-        <span style="background:#f8bbd0;"></span> Generación de informes LaTeX
-    </div>
-
-    <div class="footer">
-        ⚙️ Mejora clave: El sistema guarda automáticamente cada evaluación semanal. La secretaria solo debe cargar el JSON cada viernes.<br/>
-        🔁 Adaptable a múltiples universidades mediante archivo <code>universidades_config.json</code>.<br/>
-        ✅ <strong>Flask es gratuito</strong> – sin costos de licencia, funciona 100% local.
-    </div>
+    <p style="text-align:center; margin-top:20px;">✅ Diagrama validado para Mermaid v10.9.5</p>
 </div>
-
 <script>
-    mermaid.initialize({ startOnLoad: true, theme: 'base', themeVariables: {
-        'background': '#ffffff',
-        'primaryColor': '#bbdef5',
-        'primaryBorderColor': '#1e3c72',
-        'primaryTextColor': '#0a2f44',
-        'lineColor': '#2c3e50',
-        'secondaryColor': '#fff3e0',
-        'tertiaryColor': '#d4e0ec'
-    }});
+    mermaid.initialize({ startOnLoad: true, theme: 'base' });
 </script>
 </body>
 </html>
